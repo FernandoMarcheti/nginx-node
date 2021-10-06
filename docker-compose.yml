@@ -10,31 +10,41 @@ services:
       - node-network
     ports:
       - "8080:80"
+    depends_on: 
+      - db
+      - node
 
   node:
-    build: node
+    build:
+      context: node
     container_name: node
-    volumes: 
-      - ./node:/node
     networks:
       - node-network
     depends_on: 
       - db
+    volumes: 
+      - ./node:/usr/src/app
+      - /usr/src/app/node_modules
 
   db:
     image: mysql:5.7
-    command: --innodb-use-native-aio=0
     container_name: db
-    restart: always
+    command: --innodb-use-native-aio=0
     tty: true
+    restart: always
+    networks:
+      - node-network
     volumes:
-      - ./mysql:/var/lib/mysql
+      # - nodemysqldb:/var/lib/mysql
+      - ./mysql/dump:/docker-entrypoint-initdb.d
     environment:
       - MYSQL_DATABASE=nodedb
       - MYSQL_ROOT_PASSWORD=root
-    networks:
-      - node-network
+
 
 networks:
   node-network:
     driver: bridge
+
+# volumes:
+#   nodemysqldb:
