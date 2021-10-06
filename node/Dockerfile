@@ -1,5 +1,7 @@
-FROM node:latest
+FROM node:15
 
-WORKDIR /node
+WORKDIR /usr/src/app
+COPY . .
+RUN npm cache clean --force  && npm install
 
 CMD [ "node", "index.js"]
